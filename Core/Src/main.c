@@ -183,7 +183,25 @@ void DMA1_Stream0_IRQHandler(void)
     }
 }
 
+void DMA1_Channel7_IRQHandler(void)
+{
+    GPIOC->BSRR |= GPIO_BSRR_BS8;
+    if (DMA_GetITStatus(DMA1_IT_TC7)==SET)
+    {
+        DMA_CleanITPendingBit(DMA1_IT_TC7);
+        I2C1->CR1 &= ~LL_I2C_ACK;
+        I2C1->CR1 |= LL_I2C_STOP;
 
+        ACCEL_X=(malloc[1]<<8) | malloc[0];
+        ACCEL_Y=(malloc[3]<<8) | malloc[2];
+        ACCEL_Z=(malloc[5]<<8) | malloc[4];
+        //TEMP=(malloc[7]<<8) | malloc[6];
+        GYRO_X=(malloc[9]<<8) | malloc[8];
+        GYRO_Y=(malloc[9]<<8) | malloc[8];
+        GYRO_Z=(malloc[9]<<8) | malloc[8];
+    }
+    GPIOC->BRR |= GPIO_BRR_BS8;
+}
 
 #endif /* USE_FULL_ASSERT */
 
